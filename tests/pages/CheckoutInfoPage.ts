@@ -5,6 +5,7 @@ export class CheckoutInfoPage {
   readonly lastName: Locator;
   readonly postalCode: Locator;
   readonly continueButton: Locator;
+  readonly cancelButton: Locator;
   readonly error: Locator;
 
   constructor(page: Page) {
@@ -12,6 +13,7 @@ export class CheckoutInfoPage {
     this.lastName = page.getByTestId('lastName');
     this.postalCode = page.getByTestId('postalCode');
     this.continueButton = page.getByTestId('continue');
+    this.cancelButton = page.getByTestId('cancel');
     this.error = page.getByTestId('error');
   }
 
