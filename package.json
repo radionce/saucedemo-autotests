@@ -6,14 +6,23 @@
     "test": "playwright test",
     "report": "playwright show-report",
     "test:chromium": "playwright test --project=chromium",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "type": "commonjs",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
     "@types/node": "^22.20.2",
-    "typescript": "^7.0.2"
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-playwright": "^2.12.2",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1"
   },
   "repository": {
     "type": "git",
