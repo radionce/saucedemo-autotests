@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login, PASSWORD } from './helpers';
+import { login } from './helpers';
 
 test('valid credentials land on the inventory page', async ({ page }) => {
   await login(page);
@@ -42,13 +42,17 @@ test('unknown username is refused', async ({ page }) => {
 
 test('inventory page is unreachable when logged out', async ({ page }) => {
   await page.goto('/inventory.html');
-  await expect(page.getByTestId('error')).toContainText("You can only access '/inventory.html' when you are logged in");
+  await expect(page.getByTestId('error')).toContainText(
+    "You can only access '/inventory.html' when you are logged in",
+  );
   await expect(page.getByTestId('login-button')).toBeVisible();
 });
 
 test('cart page is unreachable when logged out', async ({ page }) => {
   await page.goto('/cart.html');
-  await expect(page.getByTestId('error')).toContainText("You can only access '/cart.html' when you are logged in");
+  await expect(page.getByTestId('error')).toContainText(
+    "You can only access '/cart.html' when you are logged in",
+  );
 });
 
 test('logout returns to the login form', async ({ page }) => {
