@@ -1,32 +1,34 @@
-import { test, expect } from '@playwright/test';
-import { login } from './helpers';
+import { test, expect } from './fixtures';
+import { PRODUCTS } from './data/products';
 
-test.beforeEach(async ({ page }) => {
-  await login(page);
-  await page.getByTestId('add-to-cart-sauce-labs-backpack').click();
-  await page.getByTestId('shopping-cart-link').click();
-  await page.getByTestId('checkout').click();
+const { backpack } = PRODUCTS;
+
+test.beforeEach(async ({ loggedInPage, header, cartPage }) => {
+  await loggedInPage.addToCart(backpack.slug);
+  await header.openCart();
+  await cartPage.checkoutButton.click();
 });
 
-test('completes an order end to end', async ({ page }) => {
-  await page.getByTestId('firstName').fill('Yaroslav');
-  await page.getByTestId('lastName').fill('Radko');
-  await page.getByTestId('postalCode').fill('01001');
-  await page.getByTestId('continue').click();
+test('completes an order end to end', async ({
+  page,
+  checkoutInfoPage,
+  checkoutOverviewPage,
+  checkoutCompletePage,
+}) => {
+  await checkoutInfoPage.fillInfo('Yaroslav', 'Radko', '01001');
+  await checkoutInfoPage.continueButton.click();
 
   // same SPA-transition race as cart.spec.ts: wait the testid down to one match first.
-  const itemName = page.getByTestId('inventory-item-name');
-  await expect(itemName).toHaveCount(1);
-  await expect(itemName).toHaveText('Sauce Labs Backpack');
-  await page.getByTestId('finish').click();
+  await expect(checkoutOverviewPage.itemNames).toHaveCount(1);
+  await expect(checkoutOverviewPage.itemNames).toHaveText(backpack.name);
+  await checkoutOverviewPage.finishButton.click();
 
   await expect(page).toHaveURL(/checkout-complete\.html/);
-  await expect(page.getByTestId('complete-header')).toHaveText('Thank you for your order!');
+  await expect(checkoutCompletePage.header).toHaveText('Thank you for your order!');
 });
 
-test('missing last name blocks checkout', async ({ page }) => {
-  await page.getByTestId('firstName').fill('Yaroslav');
-  await page.getByTestId('postalCode').fill('01001');
-  await page.getByTestId('continue').click();
-  await expect(page.getByTestId('error')).toContainText('Last Name is required');
+test('missing last name blocks checkout', async ({ checkoutInfoPage }) => {
+  await checkoutInfoPage.fillInfo('Yaroslav', '', '01001');
+  await checkoutInfoPage.continueButton.click();
+  await expect(checkoutInfoPage.error).toContainText('Last Name is required');
 });
