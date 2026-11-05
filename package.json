@@ -1,11 +1,12 @@
 {
   "name": "saucedemo-autotests",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Playwright + TypeScript test automation portfolio: UI tests for SauceDemo",
   "scripts": {
     "test": "playwright test",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "test:chromium": "playwright test --project=chromium",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "type": "commonjs",
@@ -13,5 +14,12 @@
     "@playwright/test": "^1.63.0",
     "@types/node": "^22.20.2",
     "typescript": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radionce/saucedemo-autotests.git"
+  },
+  "engines": {
+    "node": ">=26"
   }
 }
