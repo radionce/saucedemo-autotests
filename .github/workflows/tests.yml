@@ -50,6 +50,26 @@ jobs:
             test-results/
           retention-days: 14
 
+  api-tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run test:api
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: report-api
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
   publish-report:
     needs: ui-tests
     # Publish failing runs too: that is when the report is most useful.
