@@ -61,6 +61,33 @@ test('removing the item from the cart page leaves it empty', async ({
   await expect(header.cartBadge).toHaveCount(0);
 });
 
+test('multiple items show in the badge and as cart rows', async ({
+  loggedInPage,
+  header,
+  cartPage,
+}) => {
+  const products = [PRODUCTS.backpack, PRODUCTS.bikeLight, PRODUCTS.onesie];
+  for (const product of products) {
+    await loggedInPage.addToCart(product.slug);
+  }
+  await expect(header.cartBadge).toHaveText(String(products.length));
+
+  await header.openCart();
+  await expect(cartPage.itemNames).toHaveText(products.map((product) => product.name));
+});
+
+test('continue shopping returns to the inventory', async ({
+  page,
+  loggedInPage,
+  header,
+  cartPage,
+}) => {
+  await header.openCart();
+  await cartPage.continueShoppingButton.click();
+  await expect(page).toHaveURL(/inventory\.html/);
+  await expect(loggedInPage.items).toHaveCount(6);
+});
+
 // Known site defect: logout clears the session cookie but not the cart, so the next
 // person to log in on a shared machine inherits the previous session's items.
 // Asserted as the correct behaviour and marked expected-to-fail, so this flips to a
