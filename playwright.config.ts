@@ -17,8 +17,16 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    { name: 'chromium', testIgnore: 'api/**', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', testIgnore: 'api/**', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', testIgnore: 'api/**', use: { ...devices['Desktop Safari'] } },
+    {
+      name: 'api',
+      testDir: './tests/api',
+      use: {
+        baseURL: 'https://restful-booker.herokuapp.com',
+        extraHTTPHeaders: { Accept: 'application/json' },
+      },
+    },
   ],
 });
