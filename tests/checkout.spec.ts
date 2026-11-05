@@ -32,3 +32,32 @@ test('missing last name blocks checkout', async ({ checkoutInfoPage }) => {
   await checkoutInfoPage.continueButton.click();
   await expect(checkoutInfoPage.error).toContainText('Last Name is required');
 });
+
+test('missing first name blocks checkout', async ({ checkoutInfoPage }) => {
+  await checkoutInfoPage.fillInfo('', 'Radko', '01001');
+  await checkoutInfoPage.continueButton.click();
+  await expect(checkoutInfoPage.error).toContainText('First Name is required');
+});
+
+test('missing postal code blocks checkout', async ({ checkoutInfoPage }) => {
+  await checkoutInfoPage.fillInfo('Yaroslav', 'Radko', '');
+  await checkoutInfoPage.continueButton.click();
+  await expect(checkoutInfoPage.error).toContainText('Postal Code is required');
+});
+
+test('cancel on the information step returns to the cart', async ({ page, checkoutInfoPage }) => {
+  await checkoutInfoPage.cancelButton.click();
+  await expect(page).toHaveURL(/cart\.html/);
+});
+
+test('cancel on the overview step returns to the inventory', async ({
+  page,
+  checkoutInfoPage,
+  checkoutOverviewPage,
+}) => {
+  await checkoutInfoPage.fillInfo('Yaroslav', 'Radko', '01001');
+  await checkoutInfoPage.continueButton.click();
+  await checkoutOverviewPage.expectLoaded();
+  await checkoutOverviewPage.cancelButton.click();
+  await expect(page).toHaveURL(/inventory\.html/);
+});
