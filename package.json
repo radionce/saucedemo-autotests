@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "keywords": [],
   "type": "commonjs",

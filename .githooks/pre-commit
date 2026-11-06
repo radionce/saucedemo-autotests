@@ -1,0 +1,24 @@
+#!/bin/sh
+# Блокує коміт, якщо в доданих рядках чи назвах файлів є схожі на секрети дані.
+# Шаблони: .githooks/secret-patterns.txt. Свідомо обійти: git commit --no-verify
+root=$(git rev-parse --show-toplevel)
+patterns="$root/.githooks/secret-patterns.txt"
+
+bad_files=$(git diff --cached --name-only --diff-filter=ACMR \
+  | grep -Ei '(^|/)(\.env(\..*)?|id_(rsa|ed25519)[^/]*|[^/]*\.(pem|key|p12|pfx|keystore)|(credentials|client_secret|service-account)[^/]*\.json|token\.json)$' \
+  | grep -v '\.env\.example$')
+
+# Файли шаблонів і allowlist не скануємо, інакше вони заблокують самі себе
+hits=$(git diff --cached -U0 --diff-filter=ACMR -- . ':!.githooks/secret-patterns.txt' ':!.githooks/secret-allowlist.txt' \
+  | grep '^+' | grep -v '^+++' | grep -Ei -f "$patterns")
+# Свідомо публічні значення (демо-паролі тощо): по одному рядку в secret-allowlist.txt
+allow="$root/.githooks/secret-allowlist.txt"
+[ -n "$hits" ] && [ -f "$allow" ] && hits=$(printf '%s\n' "$hits" | grep -vF -f "$allow")
+
+if [ -n "$bad_files" ] || [ -n "$hits" ]; then
+  echo "⛔ Коміт заблоковано: схоже на чутливі дані." >&2
+  [ -n "$bad_files" ] && printf 'Файли:\n%s\n' "$bad_files" >&2
+  [ -n "$hits" ] && printf 'Рядки:\n%s\n' "$hits" | cut -c1-120 >&2
+  echo "Приберіть їх (git restore --staged <файл>) або, якщо це хибна тривога: git commit --no-verify" >&2
+  exit 1
+fi
